@@ -1,4 +1,4 @@
 export class CreateUserPayload {
-	readonly name: string;
+	readonly login: string;
 	readonly password: string;
 }

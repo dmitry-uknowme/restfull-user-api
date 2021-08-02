@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import User from '../../entities/user.entity';
@@ -20,7 +20,32 @@ export class UserService {
 	}
 
 	async create(payload: CreateUserPayload): Promise<User> {
-		return this.userRepository.create();
+		const errors = [];
+		let response: Object = { success: true };
+
+		if (!payload.login || payload?.login?.trim() === '') {
+			errors.push('login was not provided');
+		}
+
+		if (payload.password || payload?.password?.trim() !== '') {
+			if (!payload.password.match(/\d+/g)) {
+				errors.push('password must contains at least one numeric character');
+			}
+			if (!payload.password.match(/[A-Z]/g)) {
+				errors.push('password must contains at least one capital letter');
+			}
+		} else {
+			errors.push('password was not provided');
+		}
+
+		if (errors.length) {
+			response = { ...response, success: false, status: HttpStatus.BAD_REQUEST, errors };
+			throw new HttpException(response, HttpStatus.BAD_REQUEST);
+		}
+
+		const user = this.userRepository.create({ ...payload });
+		await this.userRepository.save(user);
+		return { ...user, ...response };
 	}
 
 	async update(id: string, payload: CreateUserPayload): Promise<User> {
