@@ -30,7 +30,7 @@ export class UserService {
 			errors.push('login was not provided');
 		}
 
-		if (payload.password || payload?.password?.trim() !== '') {
+		if (payload.password && payload?.password?.trim() !== '') {
 			if (!payload.password.match(/\d+/g)) {
 				errors.push('password must contains at least one numeric character');
 			}
@@ -55,26 +55,34 @@ export class UserService {
 		const errors = [];
 		let response: Object = { success: true };
 		const user = await this.userRepository.findOne(id, { relations: ['roles'] });
-		this.userRepository.update(id, { login: payload?.login, password: payload?.password });
-		if (payload.password || payload?.password?.trim() !== '') {
+		// this.userRepository.update(id, { login: payload?.login, password: payload?.password });
+
+		if (payload.login && payload?.login?.trim() !== '') {
+			this.userRepository.update(id, { login: payload.login });
+		}
+
+		if (payload.password && payload?.password?.trim() !== '') {
 			if (!payload.password.match(/\d+/g)) {
 				errors.push('password must contains at least one numeric character');
-			}
-			if (!payload.password.match(/[A-Z]/g)) {
+			} else if (!payload.password.match(/[A-Z]/g)) {
 				errors.push('password must contains at least one capital letter');
+			} else {
+				this.userRepository.update(id, { password: payload.password });
 			}
 		}
 
-		if (payload.roles.length) {
+		if (payload.roles) {
 			user.roles = [];
-			payload.roles.map(async (role) => {
-				const foundRole = await this.roleRepository.findOne(role);
-				if (foundRole) {
-					user.roles.push(foundRole);
-				} else {
-					errors.push(`role with id ${role} has not found`);
-				}
-			});
+			if (payload.roles.length) {
+				payload.roles.map(async (role) => {
+					const foundRole = await this.roleRepository.findOne(role);
+					if (foundRole) {
+						user.roles.push(foundRole);
+					} else {
+						errors.push(`role with id ${role} has not found`);
+					}
+				});
+			}
 		}
 
 		if (errors.length) {

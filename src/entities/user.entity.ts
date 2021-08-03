@@ -15,7 +15,7 @@ export default class User {
 	// @ManyToMany((type) => Role, { cascade: true,eager:true })
 	// @JoinTable()
 	// roles: Role[];
-	@ManyToMany((type) => Role, (role) => role.users, { eager: true })
+	@ManyToMany((type) => Role, (role) => role.users)
 	@JoinTable({
 		name: 'user_role',
 		joinColumns: [{ name: 'user_id' }],
