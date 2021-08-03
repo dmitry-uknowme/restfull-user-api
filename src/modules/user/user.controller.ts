@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { CreateUserPayload } from './user.payload';
+import { CreateUserPayload, UpdateUserPayload } from './user.payload';
 import { UserService } from './user.service';
 
 @Controller('/api/users')
@@ -22,7 +22,7 @@ export class UserController {
 	}
 
 	@Put(':id')
-	update(@Param('id') id: string, @Body() payload: CreateUserPayload) {
+	update(@Param('id') id: string, @Body() payload: UpdateUserPayload) {
 		return this.userService.update(id, payload);
 	}
 
