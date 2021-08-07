@@ -7,7 +7,7 @@ export class UserController {
 	constructor(private userService: UserService) {}
 
 	@Get(':id')
-	getOne(@Param('id') id: string) {
+	getOne(@Param('id') id: number) {
 		return this.userService.getOne(id);
 	}
 
@@ -22,12 +22,12 @@ export class UserController {
 	}
 
 	@Put(':id')
-	update(@Param('id') id: string, @Body() payload: UpdateUserPayload) {
+	update(@Param('id') id: number, @Body() payload: UpdateUserPayload) {
 		return this.userService.update(id, payload);
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
+	remove(@Param('id') id: number) {
 		return this.userService.remove(id);
 	}
 }

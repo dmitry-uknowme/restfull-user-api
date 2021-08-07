@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToOn
 import { Role } from './role.entity';
 
 @Entity()
-export default class User {
+export class User {
 	@PrimaryGeneratedColumn()
 	id: number;
 
@@ -12,9 +12,6 @@ export default class User {
 	@Column()
 	password: string;
 
-	// @ManyToMany((type) => Role, { cascade: true,eager:true })
-	// @JoinTable()
-	// roles: Role[];
 	@ManyToMany((type) => Role, (role) => role.users)
 	@JoinTable({
 		name: 'user_role',

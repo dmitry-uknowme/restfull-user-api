@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserPayload, UpdateUserPayload } from './user.payload';
-import User from '../../entities/user.entity';
-import { Role } from 'src/entities/role.entity';
+import { User } from '../../entities/user.entity';
+import { Role } from '../../entities/role.entity';
 
 @Injectable()
 export class UserService {
@@ -11,10 +11,10 @@ export class UserService {
 		@InjectRepository(User)
 		private userRepository: Repository<User>,
 		@InjectRepository(Role)
-		private roleRepository: Repository<Role> // private UserLogger: Logger = new Logger()
+		private roleRepository: Repository<Role>
 	) {}
 
-	async getOne(id: string): Promise<User> {
+	async getOne(id: number): Promise<User> {
 		return this.userRepository.findOne(id, { relations: ['roles'] });
 	}
 
@@ -51,7 +51,7 @@ export class UserService {
 		return { ...user, ...response };
 	}
 
-	async update(id: string, payload: UpdateUserPayload): Promise<any> {
+	async update(id: number, payload: UpdateUserPayload): Promise<any> {
 		const errors = [];
 		let response: Object = { success: true };
 		const user = await this.userRepository.findOne(id, { relations: ['roles'] });
@@ -93,7 +93,8 @@ export class UserService {
 		return { ...user, ...response };
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: number): Promise<number> {
 		await this.userRepository.delete(id);
+		return id;
 	}
 }
